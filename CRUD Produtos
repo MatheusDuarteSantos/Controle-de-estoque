@@ -1,0 +1,256 @@
+//index
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Controle de Estoque</title>
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+	<div class="page-header">
+	<h1>Gerenciar Produtos</h1>
+	</div>
+
+	<ul class="nav nav-pills">
+		<li role="presentation" class="active"><a href="inserirProduto.php">Inserir Produto</a></li>
+		<li role="presentation"><a href="exibirProduto.php">Exibr Produtos</a></li>
+		<li role="presentation"><a href="alterarProduto.php">Alterar Produtos</a></li>
+		<li role="presentation"><a href="excluirProduto.php">Excluir Produtos</a></li>
+	</ul>
+
+</body>
+</html>
+
+
+//nova página para php conexão com o banco
+<?php
+
+//conexão com o servidor de banco de dados
+$bdServidor = '127.0.0.1';
+$bdUsuario = 'admin';
+$bdSenha = 'root';
+$bdBanco = 'controledeestoque';
+$conexao = mysqli_connect($bdServidor, $bdUsuario, $bdSenha, $bdBanco);
+
+if (mysqli_connect_errno($conexao)) {
+echo "Problemas para conectar no banco. Verifique os dados!";
+die();
+
+}
+
+?>
+
+//nova página php para inserção de dados.
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Controle de Estoque</title>
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+	<div class="page-header">
+		<h1>Inserir novo produto</h1>
+	</div>
+
+	<form action="criarProduto.php" method="post" class="navbar-form navbar-left">
+		<div class="form-group">
+			<input type="text" class="form-control" name="nome" placeholder="Nome">
+			<input type="text" class="form-control" name="descricao" placeholder="Descrição">
+			<input type="float" class="form-control" name="preco" placeholder="Preço">
+		</div>
+		<button type="submit" class="btn btn-default">Enviar</button>
+	</form>
+
+</body>
+</html>
+
+//nova página php
+<? include ("conexao.php"); ?>
+<?php
+
+$pegaNome = $_POST['nome'];
+$pegaDescricao = $_POST['descricao'];
+$pegaPreco = $_POST['preco'];
+
+$query = "insert into produto(nome, descricao, preco)";
+$query .= "values('$pegaNome', '$pegaDescricao', '$pegaPreco')";
+
+$ok = mysqli_query($query, $conexao);
+
+if($ok) {
+	echo "Produto Inserido com Sucesso.";
+} else {
+	echo "Erro ao Inserir Produto.";
+}
+
+mysqli_close();
+
+//nova página para php buscar dados
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Controle de Estoque</title>
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+	<div class="page-header">
+		<h1>Buscar Produtos</h1>
+	</div>
+
+	<form action="exibeProdutos.php" method="post" class="navbar-form navbar-left">
+		<div class="form-group">
+			<input type="text" class="form-control" name="nome" placeholder="Nome">
+		</div>
+		<button type="submit" class="btn btn-default">Enviar</button>
+	</form>
+
+</body>
+</html>
+
+//nova página php
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Controle de Estoque</title>
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+	<?
+	$pegaNome = $_POST['nome'];
+
+	$query = "select * from produto where nome like '%$pegaNome%'";
+
+	$result = mysqli_query($query, $conexao)
+
+	$ok = mysqli_query($query, $conexao);
+
+	?>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">Resultado da busca</div>
+
+		<table class="table">
+			<th>
+				<tr>Id</tr>
+				<tr>Nome</tr>
+				<tr>Descrição</tr>
+				<tr>Preço</tr>
+			</th>
+
+			<? while ($user = mysqli_fetch_array($result)) { ?>
+			<tr>
+				<td><?= $user['id'] ?></td>
+				<td><?= $user['nome'] ?></td>
+				<td><?= $user['descricao'] ?></td>
+				<td><?= $user['preco'] ?></td>
+			</tr>
+			<?	
+		}
+		mysqli_close();
+		?>
+	</table>
+</div>
+
+</body>
+</html>
+
+//novapágina php para alteração de dados
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Controle de Estoque</title>
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+	<div class="page-header">
+		<h1>Alterar produto</h1>
+		<h2>Digite os campos a serem alterados:</h2>
+	</div>
+
+	<form action="alteraProdutos.php" method="post" class="navbar-form navbar-left">
+		<div class="form-group">
+			<input type="text" class="form-control" name="id" placeholder="ID">
+			<input type="text" class="form-control" name="nome" placeholder="Nome">
+			<input type="text" class="form-control" name="descricao" placeholder="Descrição">
+			<input type="float" class="form-control" name="preco" placeholder="Preço">
+		</div>
+		<button type="submit" class="btn btn-default">Enviar</button>
+	</form>
+
+</body>
+</html>
+
+//nova página php
+<? include ("conexao.php"); ?>
+<?php
+
+$pegaId - $_POST['id'];
+$pegaNome = $_POST['nome'];
+$pegaDescricao = $_POST['descricao'];
+$pegaPreco = $_POST['preco'];
+
+$query = "update produto set nome='$pegaNome', descricao='$pegaDescricao', preco='$pegaPreco' where = $pegaId";
+
+
+$ok = mysqli_query($query, $conexao);
+
+if($ok) {
+	echo "Produto Alterado com Sucesso.";
+} else {
+	echo "Erro ao Alterar Produto.";
+}
+
+mysqli_close();
+
+//novapágina para exclusão de dados
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Controle de Estoque</title>
+	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+	<div class="page-header">
+		<h1>Deletar produto</h1>
+		<h2>Digite o ID do produto que será excluído:</h2>
+	</div>
+
+	<form action="excluiProdutos.php" method="post" class="navbar-form navbar-left">
+		<div class="form-group">
+			<input type="text" class="form-control" name="id" placeholder="ID">
+		</div>
+		<button type="submit" class="btn btn-default">Enviar</button>
+	</form>
+
+</body>
+</html>
+
+//nova página php
+<? include ("conexao.php"); ?>
+<?php
+
+$pegaId - $_POST['id'];
+
+$query = "delete from produto where = $pegaId";
+
+
+$ok = mysqli_query($query, $conexao);
+
+if($ok) {
+	echo "Produto Excluído com Sucesso.";
+} else {
+	echo "Erro ao Excluir Produto.";
+}
+
+mysqli_close();
